@@ -85,7 +85,7 @@ class Betabrite
 		data << 0x24.chr
 		
 		# Create 5 text files A-E, max 256 byte size, run time set as always
-		('A'..'B').each do |i|
+		('A'..'E').each do |i|
 			data << "#{i}AL0100FF00"
 		end
 		
