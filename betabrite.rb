@@ -10,6 +10,44 @@ class Betabrite
 	EOT  = 4.chr
 	ESC  = 27.chr
 	
+	NEW_PAGE = 0x0c.chr
+	NEW_LINE = 0x0d.chr
+	
+	CALL_STRING = 0x10.chr # Must be followed by string file label
+	CALL_TIME = 0x13.chr
+	CALL_DOTS = 0x14.chr # Must be followed by small dots file label
+	
+	SPEED_1 = 0x15.chr
+	SPEED_2 = 0x16.chr
+	SPEED_3 = 0x17.chr
+	SPEED_4 = 0x18.chr
+	SPEED_5 = 0x19.chr
+	
+	SET_COLOR = 0x1c.chr # Must be followed by 1-9, A, B, C
+	COLOR_RED				= SET_COLOR + '1'
+	COLOR_GREEN			= SET_COLOR + '2'
+	COLOR_AMBER			= SET_COLOR + '3'
+	COLOR_DIM_RED		= SET_COLOR + '4'
+	COLOR_DIM_GREEN = SET_COLOR + '5'
+	COLOR_BROWN 		= SET_COLOR + '6'
+	COLOR_ORANGE 		= SET_COLOR + '7'
+	COLOR_YELLOW 		= SET_COLOR + '8'
+	COLOR_RAINBOW1 	= SET_COLOR + '9'
+	COLOR_RAINBOW2 	= SET_COLOR + 'A'
+	COLOR_MIX 			= SET_COLOR + 'B'
+	COLOR_AUTO 			= SET_COLOR + 'C'
+	
+	SET_FONT = 0x1a.chr
+	FONT_FIVE_STD 	= SET_FONT + '1'
+	FONT_FIVE_BOLD 	= SET_FONT + '2'
+	FONT_FIVE_WIDE	= SET_FONT + 0x3b.chr
+	FONT_SEVEN_STD 	= SET_FONT + '3'
+	FONT_SEVEN_BOLD	= SET_FONT + '4'
+	FONT_SEVEN_WIDE = SET_FONT + 0x3c.chr
+	
+	FONT_SPACING_PRORTIONAL	= 0x1e.chr + '0'
+	FONT_SPACING_FIXED			= 0x1e.chr + '1'
+	
 	PRIORITY_FILE = 0x30.chr # Overrides other messages on the sign if it exists
 	
 	def initialize(tty)
@@ -223,12 +261,6 @@ class Betabrite
 		sum += STX.ord + ETX.ord
 		sum = sum % 65535
 		return (sprintf "%04x", sum).upcase
-	end
-	
-	
-	# Text colors
-	def text_color(color)
-		
 	end
 	
 	def send_command(data)
