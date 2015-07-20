@@ -52,6 +52,13 @@ class Betabrite
 		send_command data
 	end
 	
+	def set_date(date = Time.now)
+		data = command(:write_special)
+		data << 0x3b.chr
+		data << date.strftime('%m%d%y')
+		send_command data
+	end
+	
 	def set_time_format(ampm = false)
 		data = command(:write_special)
 		data << 0x27.chr # Set time format
