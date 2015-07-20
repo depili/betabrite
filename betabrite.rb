@@ -21,6 +21,68 @@ class Betabrite
 	end
 	
 	def write_text(file, mode, text)
+		# Encode the display mode
+		case mode
+		when :rotate # Text scrolls from right to left
+			mode = 'a'
+		when :hold # Text is displayed centered, no animation
+			mode = 'b'
+		when :flash
+			mode = 'c' # At least my betabrite reboots with this mode
+		when :roll_up
+			mode = 'e'
+		when :roll_down
+			mode = 'f'
+		when :roll_left
+			mode = 'g'
+		when :roll_right
+			mode = 'h'
+		when :wipe_up
+			mode = 'i'
+		when :wipe_down
+			mode = 'j'
+		when :wipe_left
+			mode = 'k'
+		when :wipe_right
+			mode = 'l'
+		when :scroll
+			mode = 'm'
+		when :automode
+			mode = 'o'
+		when :roll_in
+			mode = 'p'
+		when :roll_out
+			mode = 'q'
+		when :wipe_in
+			mode = 'r'
+		when :wipe_out
+			mode = 's'
+		when :c_rotate
+			mode = 't'
+		when :twinkle # Pixels of the text twinkle on the display
+			mode = 'n0'
+		when :sparkle # Draw the new text one pixel at a time
+			mode = 'n1'
+		when :snow # Pixels snow down from top
+			mode = 'n2'
+		when :interlock
+			mode = 'n3'
+		when :switch
+			mode = 'n4'
+		when :slide
+			mode = 'n5'
+		when :spray
+			mode = 'n6'
+		when :starburst
+			mode = 'n7'
+		when :welcome
+			mode = 'n8'
+		when :slot_machine
+			mode = 'n9' # This also crashes my betabrite
+		else
+			mode = 'a'
+		end
+		
 		data = command(:write_text)
 		data << file
 		data << ESC
