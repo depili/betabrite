@@ -126,14 +126,14 @@ class Betabrite
 		data << ESC
 		data << 32.chr # Use middle line (we have only one line)
 		data << mode
-		data << text
+		data << escape_text(text)
 		send_command data
 	end
 	
 	def write_string(file, text)
 		data = command(:write_string)
 		data << file
-		data << text
+		data << escape_text(text)
 		send_command data
 	end
 	
@@ -261,6 +261,30 @@ class Betabrite
 		sum += STX.ord + ETX.ord
 		sum = sum % 65535
 		return (sprintf "%04x", sum).upcase
+	end
+	
+	# Convert some non-ascii characters into escaped extended characters for the panel
+	def escape_text(text)
+		esc = 0x08.chr
+		extended_chars = {
+			'ä' => (esc + 0x24.chr),
+			'Ä' => (esc + 0x2e.chr),
+			'ö' => (esc + 0x34.chr),
+			'Ö' => (esc + 0x39.chr),
+			'å' => (esc + 0x26.chr),
+			'Å' => (esc + 0x2f.chr)
+		}
+		
+		extended_chars.each_pair do |k,v|
+			text.gsub! k, v
+		end
+		
+		text.each_index do |i|
+			if text[i].ord > 127
+				text[i] = '_'
+			end
+		end
+		return text
 	end
 	
 	def send_command(data)
