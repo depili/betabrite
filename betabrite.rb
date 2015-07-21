@@ -279,12 +279,16 @@ class Betabrite
 			text.gsub! k, v
 		end
 		
-		text.each_index do |i|
-			if text[i].ord > 127
-				text[i] = '_'
+		escaped = String.new
+		
+		text.each_char do |c|
+			if c.ord > 127
+				escaped << '_'
+			else
+				escaped << c
 			end
 		end
-		return text
+		return escaped
 	end
 	
 	def send_command(data)
