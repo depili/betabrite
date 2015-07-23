@@ -22,6 +22,7 @@ class Betabrite
 	SPEED_3 = 0x17.chr
 	SPEED_4 = 0x18.chr
 	SPEED_5 = 0x19.chr
+	NO_HOLD = 0x09.chr
 	
 	SET_COLOR = 0x1c.chr # Must be followed by 1-9, A, B, C
 	COLOR_RED				= SET_COLOR + '1'
