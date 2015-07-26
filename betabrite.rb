@@ -1,4 +1,18 @@
 #!/usr/bin/env ruby
+#
+#  betabrite.rb
+#  A Simple ruby class for interfacing with AMS
+#  Led matrix signs via the Alpha protocol.
+#  
+#  Not a complete implementation, just something
+#  to control my old Betabrite 1040 sign.
+#
+#  Created by Vesa-Pekka Palmu on 2015-07-26.
+#  Copyright 2015 Vesa-Pekka Palmu.
+#  Licended under the MIT license, see LICENSE
+#
+
+
 
 require 'serialport'
 
@@ -17,6 +31,7 @@ class Betabrite
 	CALL_TIME = 0x13.chr
 	CALL_DOTS = 0x14.chr # Must be followed by small dots file label
 	
+	# Message speeds
 	SPEED_1 = 0x15.chr
 	SPEED_2 = 0x16.chr
 	SPEED_3 = 0x17.chr
@@ -24,6 +39,7 @@ class Betabrite
 	SPEED_5 = 0x19.chr
 	NO_HOLD = 0x09.chr
 	
+	# Colors
 	SET_COLOR = 0x1c.chr # Must be followed by 1-9, A, B, C
 	COLOR_RED				= SET_COLOR + '1'
 	COLOR_GREEN			= SET_COLOR + '2'
@@ -38,6 +54,7 @@ class Betabrite
 	COLOR_MIX 			= SET_COLOR + 'B'
 	COLOR_AUTO 			= SET_COLOR + 'C'
 	
+	# Different fonts supported by the Betabrite 1040
 	SET_FONT = 0x1a.chr
 	FONT_FIVE_STD 	= SET_FONT + '1'
 	FONT_FIVE_BOLD 	= SET_FONT + '2'
@@ -46,11 +63,13 @@ class Betabrite
 	FONT_SEVEN_BOLD	= SET_FONT + '4'
 	FONT_SEVEN_WIDE = SET_FONT + 0x3c.chr
 	
+	# Character spacing
 	FONT_SPACING_PRORTIONAL	= 0x1e.chr + '0'
 	FONT_SPACING_FIXED			= 0x1e.chr + '1'
 	
 	PRIORITY_FILE = 0x30.chr # Overrides other messages on the sign if it exists
 	
+	# Connect to a sign via serial port and set the time and weekday
 	def initialize(tty)
 		# Open the serial port, 9600 baud, 7 data bits, 1 stop bit, even parity
 		@sp = SerialPort.new(tty, 9600, 7, 1, SerialPort::EVEN)
@@ -59,6 +78,7 @@ class Betabrite
 		set_time_format
 	end
 	
+	# Write a message to a TEXT file
 	def write_text(file, mode, text)
 		# Encode the display mode
 		case mode
@@ -131,6 +151,7 @@ class Betabrite
 		send_command data
 	end
 	
+	# Write text to a STRING file, they can be used in TEXT files.
 	def write_string(file, text)
 		data = command(:write_string)
 		data << file
@@ -146,6 +167,7 @@ class Betabrite
 		send_command data
 	end
 	
+	# Set the week day on the sign
 	def set_weekday(day = Time.now.wday)
 		data = command(:write_special)
 		data << 0x26.chr # Set day of week
@@ -153,6 +175,8 @@ class Betabrite
 		send_command data
 	end
 	
+	# Set the current date on the sign. Betabrite 1040 doesn't support this.
+	# Newer Betabrite 1036 signs support the date, but it isn't updated by the sign itself.
 	def set_date(date = Time.now)
 		data = command(:write_special)
 		data << 0x3b.chr
@@ -160,6 +184,7 @@ class Betabrite
 		send_command data
 	end
 	
+	# Select between 12 hour and 24 hour time formats
 	def set_time_format(ampm = false)
 		data = command(:write_special)
 		data << 0x27.chr # Set time format
@@ -175,12 +200,16 @@ class Betabrite
 		send_command data
 	end
 	
+	# Soft reset the sign
 	def soft_reset
 		data = command(:write_special)
 		data << 0x2c.chr # Soft reset
 		send_command data
 	end
 	
+	# Set the internal memory map on the sign.
+	# The betabrite has 30k of memory for messages
+	# You need to allocate that between text, string and graphics files.
 	def set_memory_map
 		data = command(:write_special)
 		data << 0x24.chr
@@ -198,12 +227,14 @@ class Betabrite
 		send_command data
 	end
 	
+	# This command sends the signs error register back on the serial port
 	def read_error_register
 		data = command(:read_special)
 		data << 0x2a.chr
 		send_command data
 	end
 	
+	# Read the memory size from the sign
 	def read_memory_size
 		data = command(:read_special)
 		data << 0x23.chr
@@ -292,6 +323,8 @@ class Betabrite
 		return escaped
 	end
 	
+	# Send a command to the sign.
+	# We encapsulate it between the header and the checksum.
 	def send_command(data)
 		message = header + data + ETX + checksum(data) + EOT
 		@sp.puts message
