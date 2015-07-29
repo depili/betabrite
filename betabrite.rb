@@ -241,6 +241,12 @@ class Betabrite
 		send_command data
 	end
 	
+	def clear_text(file)
+		data = command(:write_text)
+		data << file
+		send_command data
+	end
+	
 	private
 	
 	# Header is 5-10 nulls (0x00) followed by start of header (0x01)
