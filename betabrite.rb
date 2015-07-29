@@ -297,6 +297,7 @@ class Betabrite
 	
 	# Convert some non-ascii characters into escaped extended characters for the panel
 	def escape_text(text)
+		return nil if text.blank?
 		esc = 0x08.chr
 		extended_chars = {
 			'ä' => (esc + 0x24.chr),
